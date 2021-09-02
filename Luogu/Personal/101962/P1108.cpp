@@ -1,58 +1,46 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct gas_station
+double total , max_cap , miles , price , money , ans = 1e20;
+int num;
+double prices[55] , dis[55];
+
+void read()
 {
-    double distance , price;
-};
+    cin >> total >> max_cap >> miles >> money >> num;
+    for(int i = 1 ; i <= num ; i ++)
+        cin >> dis[i] >> prices[i];
+    dis[num + 1] = total;
+    return;
+}
 
-//全局变量
-gas_station stations[60];//加油站,为了方便处理将终点看做一个加油站。
-int num = 0;//
-double max_cap = 0 , miles = 0 , ans_price = 1e7 , start = 0;//max_cap是最大容量,miles是每公里行驶里程
-
-//函数表列dfs
-//读入函数
-void read();
-//深度优先搜索 
-void DFS(double remain,int step,double price);
-//主函数
-int main();
+void DFS(int now , double oil , double cost )
+{
+    if(cost > ans) return;//最优化剪枝
+    if(now == num + 1) //到站
+    {
+        if(cost < ans)
+            ans = cost;
+        return;
+    } 
+    if(oil * miles >= dis[now + 1] - dis[now])
+    {
+        if(oil >= max_cap / 2)
+            DFS(now + 1 , oil - (dis[now + 1] - dis[now]) / miles , cost);
+        else
+        {
+            DFS(now + 1 , oil - (dis[now + 1] - dis[now]) / miles , cost);
+            DFS(now + 1 , max_cap - (dis[now + 1] - dis[now]) / miles , cost + 20 + (max_cap - oil) * prices[now] );
+        }
+    }
+    else
+        DFS(now + 1 , max_cap - (dis[now + 1] - dis[now]) / miles , cost + 20 + (max_cap - oil) * prices[now] );
+}
 
 int main()
 {
     read();
-    DFS(max_cap,0,start);
-    cout << fixed << setprecision(1) << ans_price << endl;
+    DFS(1,max_cap - dis[1] / miles , money);
+    cout << fixed << setprecision(1) << ans << endl;
     return 0;
-}
-
-void read()
-{
-    double tmp = 0;
-    cin >> tmp;
-    cin >> max_cap >> miles >> start >> num;
-    for(int i = 1 ; i <= num ; i ++)
-        cin >> stations[i].distance >> stations[i].price ;
-    stations[++ num].distance = tmp;
-}
-
-void DFS(double remain,int step,double price)
-{
-    if(step > num) 
-    {
-        if(price < ans_price)
-            ans_price = price;
-        return;
-    }
-    if(stations[step + 1].distance - stations[step].distance < remain * miles)
-        DFS(max_cap - (stations[step + 1].distance - stations[step].distance) / miles,step + 1 ,price += (max_cap - remain) * stations[step].price + 20);
-    else if(remain <= max_cap / 2)
-    {
-        DFS(max_cap - (stations[step + 1].distance - stations[step].distance) / miles,step + 1 ,price += (max_cap - remain) * stations[step].price + 20);
-        DFS(remain - (stations[step + 1].distance - stations[step].distance) / miles , step + 1 , price);
-    }
-    else if(remain - (stations[step + 1].distance - stations[step].distance) / miles > 0)
-        DFS(remain - (stations[step + 1].distance - stations[step].distance) / miles , step + 1 , price);
-    else return;
 }
