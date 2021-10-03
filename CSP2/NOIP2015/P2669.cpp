@@ -3,17 +3,18 @@ using namespace std;
 
 int main()
 {
-    int n , sum = 0 , m = 1 ;
+    int n , sum = 0 , m = 1 , cnt = 0;
     cin >> n;
-    while(n > 0)
+    while(cnt < n)
     {
-        m = n;
-        while(m > 0)
+        int days = 0;
+        while(days < m && cnt < n)
         {
-            sum += n;
-            m --;
+            sum += m;
+            days ++ , cnt ++;
         }
-        n --;
+        m ++ ;
     }
     cout << sum << endl;
+    return 0;
 }
