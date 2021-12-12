@@ -32,6 +32,7 @@ void DFS(int x , int y , int val)
         }
         else if(val > ans)
             ans = val;
+        return;
     }
     for(int i = 0 ; i < 3 ; i ++)
     {
